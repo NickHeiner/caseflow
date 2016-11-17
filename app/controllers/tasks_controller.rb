@@ -11,6 +11,7 @@ class TasksController < ApplicationController
   end
 
   def show
+    @task = task
   end
 
   def assign

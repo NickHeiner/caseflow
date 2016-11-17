@@ -3,3 +3,23 @@
 <p>user: <%= task.user.display_name %></p>
 <p>vacols_id: <%= task.appeal.vacols_id %></p>
 
+<script>
+  $(document).ready(function() {
+    new window.EstablishClaim();
+  });
+</script>
+
+<%= form_for @task, url: { controller: "tasks", action: "show" },
+                    html: { id: "establishClaim", class: "cf-form cf-app-segment" },
+                 builder: CaseflowFormBuilder do |f| %>
+
+    <%= f.text_field :email_address,
+          question_number: "1", label: "Email Address:" %>
+
+    <%= f.yes_no_field :show_textbox,
+      question_number: "2", label: "Are contested claims procedures applicable in this case?" %>
+
+    <%= f.text_area :limited_textbox,
+          question_number: "3", label: "Remarks:", maxlength: 5500 %>
+
+<% end %>
