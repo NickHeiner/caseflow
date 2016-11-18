@@ -64,7 +64,7 @@ export default class EstablishClaim extends React.Component {
 
     return (
       <div className="cf-app-segment">
-         <h1>Dispatch Show WIP</h1>
+         <h1>Dispatch Show</h1>
          <p>Type: {task.type}</p>
          <p>user: {user.display_name}</p>
          <p>vacols_id: {appeal.vacols_id}</p>
