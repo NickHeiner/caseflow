@@ -1,6 +1,6 @@
 class TasksController < ApplicationController
   before_action :verify_access
-  before_action :verify_assigned_to_current_user, only: [:show, :cancel]
+  before_action :verify_assigned_to_current_user, only: [:show]
 
   class TaskTypeMissingError < StandardError; end
 
@@ -22,11 +22,6 @@ class TasksController < ApplicationController
     redirect_to url_for(current_user.tasks.to_complete.where(type: next_unassigned_task.type).first)
   end
 
-  def cancel
-    task.cancel!
-    render json: {}
-  end
-
   private
 
   def current_user_historical_tasks
@@ -40,11 +35,11 @@ class TasksController < ApplicationController
   helper_method :next_unassigned_task
 
   def scoped_tasks
-    Task.where(type: type).newest_first
+    Task.where(type: type).priority_order
   end
 
   def type
-    params[:task_type] || (task && task.type.to_sym)
+    params[:task_type]
   end
 
   def task_id

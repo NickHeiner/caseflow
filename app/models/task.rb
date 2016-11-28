@@ -6,11 +6,10 @@ class Task < ActiveRecord::Base
 
   class AlreadyAssignedError < StandardError; end
   class NotAssignedError < StandardError; end
-  class AlreadyCompleteError < StandardError; end
 
   COMPLETION_STATUS_MAPPING = {
     completed: 0,
-    cancelled: 1,
+    cancelled_by_user: 1,
     expired: 2,
     routed_to_ro: 3
   }.freeze
@@ -28,6 +27,12 @@ class Task < ActiveRecord::Base
 
     def newest_first
       order(created_at: :desc)
+    end
+
+    def priority_order
+      full_grant = where(appeals: {status: "Completed"}).joins(:appeal).order(created_at: :asc)
+      other = where.not(appeals: {status: "Completed"}).joins(:appeal).order(created_at: :asc)
+      full_grant + other
     end
 
     def completed_today
@@ -72,17 +77,9 @@ class Task < ActiveRecord::Base
     self
   end
 
-  def cancel!
-    complete_and_recreate!(:cancelled)
-  end
-
   def expire!
-    complete_and_recreate!(:expired)
-  end
-
-  def complete_and_recreate!(status_code)
     transaction do
-      complete!(self.class.completion_status_code(status_code))
+      complete!(self.class.completion_status_code(:expired))
       self.class.create!(appeal_id: appeal_id, type: type)
     end
   end
@@ -120,8 +117,6 @@ class Task < ActiveRecord::Base
 
   # completion_status is 0 for success, or non-zero to specify another completed case
   def complete!(status)
-    fail(AlreadyCompleteError) if complete?
-
     update!(
       completed_at: Time.now.utc,
       completion_status: status
