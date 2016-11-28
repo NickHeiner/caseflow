@@ -35,7 +35,7 @@ class TasksController < ApplicationController
   helper_method :next_unassigned_task
 
   def scoped_tasks
-    Task.where(type: type).priority_order
+    Task.where(type: type).oldest_first
   end
 
   def type

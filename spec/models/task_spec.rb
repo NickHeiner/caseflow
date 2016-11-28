@@ -28,26 +28,21 @@ describe Task do
     end
   end
 
-  context ".priority_order", focus: true do
-    let!(:appeal1) { Appeal.create(vacols_id: "123C", status: "Remand") }
+  context ".oldest_first" do
+    let!(:appeal1) { Appeal.create(vacols_id: "123C") }
     let!(:task1) { EstablishClaim.create(appeal: appeal1) }
-    let!(:appeal2) { Appeal.create(vacols_id: "456D", status: "Complete") }
+    let!(:appeal2) { Appeal.create(vacols_id: "456D") }
     let!(:task2) { EstablishClaim.create(appeal: appeal2) }
-    let!(:appeal3) { Appeal.create(vacols_id: "789E", status: "Remand") }
-    let!(:task3) { EstablishClaim.create(appeal: appeal3) }
-    let!(:appeal4) { Appeal.create(vacols_id: "123F", status: "Complete") }
-    let!(:task4) { EstablishClaim.create(appeal: appeal4) }
-    subject { Task.priority_order }
+    subject { Task.oldest_first }
     before do
+      expect(subject).to be_an_instance_of(Task::ActiveRecord_Relation)
       task1.update(created_at: 10.days.ago)
-      task2.update(created_at: 2.day.ago)
-      task3.update(created_at: 1.days.ago)
-      task4.update(created_at: 3.day.ago)
+      task2.update(created_at: 1.day.ago)
     end
 
     it "orders correctly" do
-      expect(subject.first).to eq(task4)
-      expect(subject.last).to eq(task3)
+      expect(subject.first).to eq(task1)
+      expect(subject.last).to eq(task2)
     end
   end  
 

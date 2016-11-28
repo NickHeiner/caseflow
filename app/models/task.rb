@@ -29,10 +29,8 @@ class Task < ActiveRecord::Base
       order(created_at: :desc)
     end
 
-    def priority_order
-      full_grant = where(appeals: {status: "Completed"}).joins(:appeal).order(created_at: :asc)
-      other = where.not(appeals: {status: "Completed"}).joins(:appeal).order(created_at: :asc)
-      full_grant + other
+    def oldest_first
+      order(created_at: :asc)
     end
 
     def completed_today
