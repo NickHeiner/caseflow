@@ -19,6 +19,21 @@ import _ from 'lodash';
  * see StyleGuideTables.jsx for usage example.
 */
 export default class Table extends React.Component {
+  constructor() {
+    super();
+    this.state = {
+      theadElemOffsetTop: null
+    };
+  }
+
+  componentDidMount() {
+    window.addEventListener('scroll', () => {
+      this.setState({
+        theadElemOffsetTop: window.scrollY - this.theadElem.offsetTop + this.props.stickyHeaderHeightOffset
+      });
+    });
+  }
+
   render() {
     let {
       columns,
@@ -44,7 +59,15 @@ export default class Table extends React.Component {
     };
 
     let HeaderRow = (props) => {
-      return <thead className={headerClassName}>
+      const { theadElemOffsetTop } = this.state;
+      const style = {};
+
+      if (theadElemOffsetTop > 0) {
+        style.transform = `translate(0, ${theadElemOffsetTop}px)`;
+      }
+
+      // eslint-disable-next-line no-return-assign
+      return <thead className={headerClassName} style={style}>
         <tr>
           {getColumns(props).map((column, columnNumber) =>
             <th scope="col" key={columnNumber} className={cellClasses(column)}>
@@ -112,6 +135,7 @@ export default class Table extends React.Component {
     };
 
     return <table
+              ref={(elem) => this.theadElem = elem }
               id={id}
               className="usa-table-borderless cf-table-borderless"
               summary={summary} >

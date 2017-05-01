@@ -5,55 +5,84 @@ import { connect } from 'react-redux';
 import { setSearch, clearAllFilters, clearSearch, toggleExpandAll } from '../../reader/actions';
 import _ from 'lodash';
 
-export const DocumentListHeader = (props) => {
-  const buttonText = props.expandAll ? 'Collapse all' : 'Expand all';
+export class DocumentListHeader extends React.PureComponent {
+  constructor() {
+    super();
+    this.state = {
+      rootElemOffsetTop: null
+    };
+  }
 
-  const categoryFilters = Object.keys(props.docFilterCriteria.category).some((category) =>
-    props.docFilterCriteria.category[category]
-  );
-  const tagFilters = Object.keys(props.docFilterCriteria.tag).some((tag) =>
-    props.docFilterCriteria.tag[tag]
-  );
-  const filteredCategories = [].concat(
-    categoryFilters ? ['categories'] : [],
-    tagFilters ? ['tags'] : []).join(' ');
+  componentDidMount() {
+    this.props.onHeight(this.rootElem.offsetHeight);
+    window.addEventListener('scroll', () => {
+      this.setState({
+        rootElemOffsetTop: window.scrollY - this.rootElem.offsetTop
+      });
+    });
+  }
 
-  return <div>
-    <div className="usa-grid-full document-list-header">
-      <div className="usa-width-one-third">
-        <SearchBar
-          id="searchBar"
-          onChange={props.setSearch}
-          onClearSearch={props.clearSearch}
-          value={props.docFilterCriteria.searchQuery}
-        />
-      </div>
-      <div className="usa-width-one-third num-of-documents">
-        {props.numberOfDocuments} Documents
-      </div>
-      <div className="usa-width-one-third">
-        <span className="cf-right-side">
-          <Button
-            name={buttonText}
-            onClick={props.toggleExpandAll}
-            id="btn-default"
+  // TODO unsubscribe the scroll listener on unmount
+
+  render() {
+    const props = this.props;
+    const buttonText = props.expandAll ? 'Collapse all' : 'Expand all';
+
+    const categoryFilters = Object.keys(props.docFilterCriteria.category).some((category) =>
+      props.docFilterCriteria.category[category]
+    );
+    const tagFilters = Object.keys(props.docFilterCriteria.tag).some((tag) =>
+      props.docFilterCriteria.tag[tag]
+    );
+    const filteredCategories = [].concat(
+      categoryFilters ? ['categories'] : [],
+      tagFilters ? ['tags'] : []).join(' ');
+
+    const {rootElemOffsetTop} = this.state;
+    const style = {};
+
+    if (rootElemOffsetTop > 0) {
+      style.transform = `translate(0, ${rootElemOffsetTop}px)`;
+    }
+
+    // eslint-disable-next-line no-return-assign
+    return <div ref={ (elem) => this.rootElem = elem } style={style}>
+      <div className="usa-grid-full document-list-header">
+        <div className="usa-width-one-third">
+          <SearchBar
+            id="searchBar"
+            onChange={props.setSearch}
+            onClearSearch={props.clearSearch}
+            value={props.docFilterCriteria.searchQuery}
           />
-        </span>
+        </div>
+        <div className="usa-width-one-third num-of-documents">
+          {props.numberOfDocuments} Documents
+        </div>
+        <div className="usa-width-one-third">
+          <span className="cf-right-side">
+            <Button
+              name={buttonText}
+              onClick={props.toggleExpandAll}
+              id="btn-default"
+            />
+          </span>
+        </div>
       </div>
-    </div>
-    {filteredCategories.length > 0 && <div className="usa-alert usa-alert-info">
-      <div className="usa-alert-body">
-        <h3 className="usa-alert-heading">Showing limited results</h3>
-        <p className="usa-alert-text">Documents are currently
-          filtered by {filteredCategories}. <a
-            href="#"
-            id="clear-filters"
-            onClick={props.clearAllFilters}>
-          Click here to see all documents.</a></p>
-      </div>
-    </div>}
-  </div>;
-};
+      {filteredCategories.length > 0 && <div className="usa-alert usa-alert-info">
+        <div className="usa-alert-body">
+          <h3 className="usa-alert-heading">Showing limited results</h3>
+          <p className="usa-alert-text">Documents are currently
+            filtered by {filteredCategories}. <a
+              href="#"
+              id="clear-filters"
+              onClick={props.clearAllFilters}>
+            Click here to see all documents.</a></p>
+        </div>
+      </div>}
+    </div>;
+  }
+}
 
 DocumentListHeader.propTypes = {
   setSearch: PropTypes.func.isRequired,

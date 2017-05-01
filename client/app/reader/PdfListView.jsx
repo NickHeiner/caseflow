@@ -61,6 +61,7 @@ export class PdfListView extends React.Component {
   constructor() {
     super();
     this.state = {
+      docListHeaderHeight: null,
       filterPositions: {
         tag: {},
         category: {}
@@ -356,10 +357,11 @@ export class PdfListView extends React.Component {
     return <div className="usa-grid">
       <div className="cf-app">
         <div className="cf-app-segment cf-app-segment--alt">
-          <DocumentListHeader documents={this.props.documents} />
+          <DocumentListHeader documents={this.props.documents} onHeight={(docListHeaderHeight) => this.setState({ docListHeaderHeight })} />
           <div>
             <Table
               columns={this.getDocumentColumns()}
+              stickyHeaderHeightOffset={this.state.docListHeaderHeight}
               rowObjects={rowObjects}
               summary="Document list"
               headerClassName="cf-document-list-header-row"
