@@ -46,7 +46,7 @@ export class DocumentListHeader extends React.PureComponent {
     }
 
     // eslint-disable-next-line no-return-assign
-    return <div ref={ (elem) => this.rootElem = elem } style={style}>
+    return <div ref={ (elem) => this.rootElem = elem } style={style} className="document-list-header-root">
       <div className="usa-grid-full document-list-header">
         <div className="usa-width-one-third">
           <SearchBar

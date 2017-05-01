@@ -15,6 +15,16 @@ $tag-backgrond-color: #d6d7d9;
     margin: 0;
   }
 
+  // TODO explain this in a comment
+  .cf-app-segment {
+    margin-top: 3rem;
+
+    .document-list-header-root {
+      padding-top: 1rem;
+      background: $color-white;
+    }
+  }
+
   .bordered-icon {
     border: 2px solid $color-gray;
     padding: 1px 2px;
@@ -196,15 +206,9 @@ $tag-backgrond-color: #d6d7d9;
 
 }
 
-.document-list-header {
-  .num-of-documents {
-    color: $gray-font-color;
-    padding: 5px;
-  }
-
-  // Add padding here to make it look better.
-  
-  background: $color-white;
+.document-list-header .num-of-documents {
+  color: $gray-font-color;
+  padding: 5px;
 }
 
 .document-list-header-issue-tags {
