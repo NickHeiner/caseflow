@@ -12,7 +12,7 @@ import TagTableColumn from '../components/reader/TagTableColumn';
 import * as Constants from './constants';
 import DropdownFilter from './DropdownFilter';
 import _ from 'lodash';
-import { setDocListScrollPosition, changeSortState, setTagFilter, setCategoryFilter, changeDocListWindowing } from './actions';
+import { setDocListScrollPosition, changeSortState, setTagFilter, setCategoryFilter, changeDocListWindowing, onTopVisibleDocChange } from './actions';
 import DocCategoryPicker from './DocCategoryPicker';
 import DocTagPicker from './DocTagPicker';
 import { getAnnotationByDocumentId } from './utils';
@@ -105,8 +105,15 @@ export class PdfListView extends React.Component {
       lowerBoundDelta = DELTA_AMOUNT;
     }
 
-    if (this.tbodyElem.scrollHeight - (this.tbodyElem.scrollTop + this.tbodyElem.getBoundingClientRect().height) < SCROLL_BUFFER) {
+    const tbodyBoundingRect = this.tbodyElem.getBoundingClientRect();
+
+    if (this.tbodyElem.scrollHeight - (this.tbodyElem.scrollTop + tbodyBoundingRect.height) < SCROLL_BUFFER) {
       upperBoundDelta = DELTA_AMOUNT;
+    }
+
+    const topVisibleDocIndex = _.findIndex(this.tbodyElem.children, (elem) => elem.getBoundingClientRect().bottom >= tbodyBoundingRect.top);
+    if (topVisibleDocIndex !== this.props.topVisibleDocIndex) {
+      this.props.onTopVisibleDocChange(topVisibleDocIndex);
     }
 
     if (lowerBoundDelta || upperBoundDelta) {
@@ -435,7 +442,7 @@ const mapStateToProps = (state, ownProps) => ({
     keyBy('id').
     mapValues((doc) => getAnnotationByDocumentId(state, doc.id)).
     value(),
-  ..._.pick(state, 'tagOptions', 'docListCursorLowerBound', 'docListCursorUpperBound'),
+  ..._.pick(state, 'tagOptions', 'docListCursorLowerBound', 'docListCursorUpperBound', 'topVisibleDocIndex'),
   ..._.pick(state.ui, 'pdfList', 'docFilterCriteria')
 });
 
@@ -445,6 +452,7 @@ const mapDispatchToProps = (dispatch) => ({
     setTagFilter,
     setCategoryFilter,
     changeDocListWindowing,
+    onTopVisibleDocChange,
     changeSortState
   }, dispatch),
   toggleDropdownFilterVisiblity(filterName) {

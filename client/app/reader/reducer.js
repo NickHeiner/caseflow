@@ -109,6 +109,7 @@ const getExpandAllState = (documents) => {
 export const initialState = {
   docListCursorLowerBound: 0,
   docListCursorUpperBound: 30,
+  topVisibleDocIndex: 0,
   ui: {
     pendingAnnotations: {},
     pendingEditingAnnotations: {},
@@ -226,6 +227,12 @@ export const reducer = (state = initialState, action = {}) => {
         }
       }
     ));
+  case Constants.ON_TOP_VISIBLE_DOC_CHANGE:
+    return update(state, {
+      topVisibleDocIndex: {
+        $set: action.payload.topVisibleDocIndex
+      }
+    });
   case Constants.SCROLL_DOC_LIST:
     return update(state, {
       docListCursorLowerBound: {

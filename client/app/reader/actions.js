@@ -7,7 +7,14 @@ export const changeDocListWindowing = (lowerBoundDelta, upperBoundDelta) => ({
   type: Constants.SCROLL_DOC_LIST,
   payload: {
     lowerBoundDelta,
-    upperBoundDelta
+    upperBoundDelta,
+  }
+});
+
+export const onTopVisibleDocChange = (topVisibleDocIndex) => ({
+  type: Constants.ON_TOP_VISIBLE_DOC_CHANGE,
+  payload: {
+    topVisibleDocIndex
   }
 });
 
