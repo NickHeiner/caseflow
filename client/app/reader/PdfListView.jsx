@@ -139,6 +139,10 @@ export class PdfListView extends React.Component {
   getLastReadIndicatorRef = (elem) => this.lastReadIndicatorElem = elem
   getTbodyRef = (elem) => this.tbodyElem = elem
 
+  shouldComponentUpdate(nextProps, nextState) {
+    return !(_.isEqual(nextProps, this.props) && _.isEqual(nextState, this.state));
+  }
+
   componentDidUpdate() {
       // if (!this.hasSetScrollPosition) {
       //   this.tbodyElem.scrollTop = this.props.pdfList.scrollTop;
@@ -163,8 +167,8 @@ export class PdfListView extends React.Component {
       // }
 
     const meanHeightOfRenderedRows = _.meanBy(this.tbodyElem.children, (child) => child.getBoundingClientRect().height);
-    const estimatedRowsHeightBeforeCursor = this.props.docListCursorLowerBound * meanHeightOfRenderedRows;
-    const estimatedRowsHeightAfterCursor = _.size(this.props.documents) - this.props.docListCursorUpperBound;
+    const estimatedRowsHeightBeforeCursor = _.round(this.props.docListCursorLowerBound * meanHeightOfRenderedRows);
+    const estimatedRowsHeightAfterCursor = _.round((_.size(this.props.documents) - this.props.docListCursorUpperBound) * meanHeightOfRenderedRows);
 
     this.setState({
       estimatedRowsHeightBeforeCursor,
@@ -215,14 +219,6 @@ export class PdfListView extends React.Component {
 
   // eslint-disable-next-line max-statements
   getDocumentColumns = (row) => {
-    if (row && _.has(row, 'spacer')) {
-      if (!row.spacer) {
-        return null;
-      }
-
-      return <tr style={{height: `${row.spacer}px`}} ariaHidden />
-    }
-
     const className = this.props.docFilterCriteria.sort.sortAscending ? 'fa-caret-up' : 'fa-caret-down';
 
     let sortIcon = <i className={`fa fa-1 ${className} table-icon`}
@@ -434,12 +430,6 @@ export class PdfListView extends React.Component {
       }).
       value();
 
-    const rowObjectsWithSpacers = [
-      {spacer: this.state.estimatedRowsHeightBeforeCursor},
-      ...rowObjects,
-      {spacer: this.state.estimatedRowsHeightAfterCursor}
-    ];
-
     return <div className="usa-grid">
       <div className="cf-app">
         <div className="cf-app-segment cf-app-segment--alt">
@@ -447,12 +437,14 @@ export class PdfListView extends React.Component {
           <div>
             <Table
               columns={this.getDocumentColumns}
-              rowObjects={rowObjectsWithSpacers}
+              rowObjects={rowObjects}
               summary="Document list"
               className="documents-table"
               headerClassName="cf-document-list-header-row"
               bodyClassName="cf-document-list-body"
               rowsPerRowObject={2}
+              preSpacerHeight={this.state.estimatedRowsHeightBeforeCursor}
+              postSpacerHeight={this.state.estimatedRowsHeightAfterCursor}
               tbodyId="documents-table-body"
               tbodyRef={this.getTbodyRef}
             />

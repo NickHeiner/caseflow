@@ -85,9 +85,14 @@ class Row extends React.PureComponent {
 
 class BodyRows extends React.PureComponent {
   render() {
-    const { rowObjects, bodyClassName, columns, rowClassNames, tbodyRef, id } = this.props;
+    const { 
+      rowObjects, bodyClassName, columns, rowClassNames, tbodyRef, id, preSpacerHeight, postSpacerHeight 
+    } = this.props;
+
+    const getSpacerRow = (height, keySuffix) => height ? <tr style={{height: `${height}px`}} aria-hidden key={`spacer-row-${keySuffix}`} /> : null;
 
     return <tbody className={bodyClassName} ref={tbodyRef} id={id}>
+      {getSpacerRow(preSpacerHeight, 'pre')}
       {rowObjects.map((object, rowNumber) =>
         <Row
           rowObject={object}
@@ -96,6 +101,7 @@ class BodyRows extends React.PureComponent {
           rowClassNames={rowClassNames}
           key={rowNumber} />
       )}
+      {getSpacerRow(postSpacerHeight, 'post')}
     </tbody>;
   }
 }
@@ -124,6 +130,8 @@ export default class Table extends React.PureComponent {
       rowClassNames = this.defaultRowClassNames,
       tbodyId,
       tbodyRef,
+      preSpacerHeight,
+      postSpacerHeight,
       id
     } = this.props;
 
@@ -137,6 +145,8 @@ export default class Table extends React.PureComponent {
           id={tbodyId}
           tbodyRef={tbodyRef}
           columns={columns}
+          preSpacerHeight={preSpacerHeight}
+          postSpacerHeight={postSpacerHeight}
           rowObjects={rowObjects}
           bodyClassName={bodyClassName}
           rowClassNames={rowClassNames} />
