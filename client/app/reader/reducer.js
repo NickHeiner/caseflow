@@ -108,7 +108,7 @@ const getExpandAllState = (documents) => {
 
 export const initialState = {
   docListCursorLowerBound: 0,
-  docListCursorUpperBound: 10,
+  docListCursorUpperBound: 30,
   ui: {
     pendingAnnotations: {},
     pendingEditingAnnotations: {},

@@ -95,9 +95,9 @@ export class PdfListView extends React.Component {
     };
   }
 
-  handleScroll = _.debounce(() => {
-    const SCROLL_BUFFER = 150;
-    const DELTA_AMOUNT = 5;
+  handleScroll = () => {
+    const SCROLL_BUFFER = 300;
+    const DELTA_AMOUNT = 20;
     let lowerBoundDelta = 0;
     let upperBoundDelta = 0;
 
@@ -112,10 +112,7 @@ export class PdfListView extends React.Component {
     if (lowerBoundDelta || upperBoundDelta) {
       this.props.changeDocListWindowing(lowerBoundDelta, upperBoundDelta);
     }
-  }, 300, {
-    leading: true,
-    trailing: true
-  });
+  };
 
   componentDidMount() {
     this.hasSetScrollPosition = false;
