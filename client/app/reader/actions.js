@@ -3,6 +3,14 @@ import _ from 'lodash';
 import ApiUtil from '../util/ApiUtil';
 import uuid from 'uuid';
 
+export const changeDocListWindowing = (lowerBoundDelta, upperBoundDelta) => ({
+  type: Constants.SCROLL_DOC_LIST,
+  payload: {
+    lowerBoundDelta,
+    upperBoundDelta
+  }
+});
+
 export const collectAllTags = (documents) => ({
   type: Constants.COLLECT_ALL_TAGS_FOR_OPTIONS,
   payload: documents

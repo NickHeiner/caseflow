@@ -12,7 +12,7 @@ import TagTableColumn from '../components/reader/TagTableColumn';
 import * as Constants from './constants';
 import DropdownFilter from './DropdownFilter';
 import _ from 'lodash';
-import { setDocListScrollPosition, changeSortState, setTagFilter, setCategoryFilter } from './actions';
+import { setDocListScrollPosition, changeSortState, setTagFilter, setCategoryFilter, changeDocListWindowing } from './actions';
 import DocCategoryPicker from './DocCategoryPicker';
 import DocTagPicker from './DocTagPicker';
 import { getAnnotationByDocumentId } from './utils';
@@ -95,15 +95,39 @@ export class PdfListView extends React.Component {
     };
   }
 
+  handleScroll = _.debounce(() => {
+    const SCROLL_BUFFER = 150;
+    const DELTA_AMOUNT = 5;
+    let lowerBoundDelta = 0;
+    let upperBoundDelta = 0;
+
+    if (this.tbodyElem.scrollTop < SCROLL_BUFFER) {
+      lowerBoundDelta = DELTA_AMOUNT;
+    }
+
+    if (this.tbodyElem.scrollHeight - (this.tbodyElem.scrollTop + this.tbodyElem.getBoundingClientRect().height) < SCROLL_BUFFER) {
+      upperBoundDelta = DELTA_AMOUNT;
+    }
+
+    if (lowerBoundDelta || upperBoundDelta) {
+      this.props.changeDocListWindowing(lowerBoundDelta, upperBoundDelta);
+    }
+  }, 300, {
+    leading: true,
+    trailing: true
+  });
+
   componentDidMount() {
     this.hasSetScrollPosition = false;
     this.setFilterIconPositions();
     window.addEventListener('resize', this.setFilterIconPositions);
+    this.tbodyElem.addEventListener('scroll', this.handleScroll);
   }
 
   componentWillUnmount() {
     this.props.setDocListScrollPosition(this.tbodyElem.scrollTop);
     window.removeEventListener('resize', this.setFilterIconPositions);
+    this.tbodyElem.removeEventListener('scroll', this.handleScroll);
   }
 
   getLastReadIndicatorRef = (elem) => this.lastReadIndicatorElem = elem
@@ -374,7 +398,7 @@ export class PdfListView extends React.Component {
       take(10).
       flatMap((doc) => {
         const result = [doc];
-        
+
         if (_.size(this.props.annotationsPerDocument[doc.id]) && doc.listComments) {
           result.push({
             ...doc,
@@ -423,6 +447,7 @@ const mapDispatchToProps = (dispatch) => ({
     setDocListScrollPosition,
     setTagFilter,
     setCategoryFilter,
+    changeDocListWindowing,
     changeSortState
   }, dispatch),
   toggleDropdownFilterVisiblity(filterName) {

@@ -107,6 +107,8 @@ const getExpandAllState = (documents) => {
 };
 
 export const initialState = {
+  docListCursorLowerBound: 0,
+  docListCursorUpperBound: 10,
   ui: {
     pendingAnnotations: {},
     pendingEditingAnnotations: {},
@@ -224,6 +226,15 @@ export const reducer = (state = initialState, action = {}) => {
         }
       }
     ));
+  case Constants.SCROLL_DOC_LIST:
+    return update(state, {
+      docListCursorLowerBound: {
+        $apply: (prevVal) => Math.max(prevVal - action.payload.lowerBoundDelta, 0)
+      },
+      docListCursorUpperBound: {
+        $apply: (prevVal) => Math.min(prevVal + action.payload.upperBoundDelta, _.size(state.ui.filteredDocIds) || _.size(state.documents))
+      }
+    });
   case Constants.SET_SEARCH:
     return updateFilteredDocIds(update(state, {
       ui: {
