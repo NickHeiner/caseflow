@@ -11,10 +11,10 @@ export const changeDocListWindowing = (lowerBoundDelta, upperBoundDelta) => ({
   }
 });
 
-export const onTopVisibleDocChange = (topVisibleDocIndex) => ({
+export const onFirstVisibleDocChange = (firstVisibleDocIndex) => ({
   type: Constants.ON_TOP_VISIBLE_DOC_CHANGE,
   payload: {
-    topVisibleDocIndex
+    firstVisibleDocIndex
   }
 });
 

@@ -110,7 +110,7 @@ const getExpandAllState = (documents) => {
 export const initialState = {
   docListCursorLowerBound: 0,
   docListCursorUpperBound: 30,
-  topVisibleDocIndex: 0,
+  firstVisibleDocIndex: 0,
   ui: {
     pendingAnnotations: {},
     pendingEditingAnnotations: {},
@@ -230,8 +230,8 @@ export const reducer = (state = initialState, action = {}) => {
     ));
   case Constants.ON_TOP_VISIBLE_DOC_CHANGE:
     return update(state, {
-      topVisibleDocIndex: {
-        $set: action.payload.topVisibleDocIndex
+      firstVisibleDocIndex: {
+        $set: action.payload.firstVisibleDocIndex
       }
     });
   case Constants.SCROLL_DOC_LIST:
@@ -271,10 +271,10 @@ export const reducer = (state = initialState, action = {}) => {
   case Constants.SELECT_CURRENT_VIEWER_PDF:
     return updateLastReadDoc(update(state, {
       docListCursorLowerBound: {
-        $set: state.topVisibleDocIndex
+        $set: state.firstVisibleDocIndex
       },
       docListCursorUpperBound: {
-        $set: state.topVisibleDocIndex + 20
+        $set: state.firstVisibleDocIndex + 20
       },
       ui: {
         pdfSidebar: { showErrorMessage: { $set: initialShowErrorMessageState } }

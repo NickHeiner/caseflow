@@ -12,7 +12,7 @@ import TagTableColumn from '../components/reader/TagTableColumn';
 import * as Constants from './constants';
 import DropdownFilter from './DropdownFilter';
 import _ from 'lodash';
-import { setDocListScrollPosition, changeSortState, setTagFilter, setCategoryFilter, changeDocListWindowing, onTopVisibleDocChange } from './actions';
+import { setDocListScrollPosition, changeSortState, setTagFilter, setCategoryFilter, changeDocListWindowing, onFirstVisibleDocChange } from './actions';
 import DocCategoryPicker from './DocCategoryPicker';
 import DocTagPicker from './DocTagPicker';
 import { getAnnotationByDocumentId } from './utils';
@@ -97,25 +97,32 @@ export class PdfListView extends React.Component {
     };
   }
 
+  // This is a good candidate for logic to be moved into Table
+  getRenderedRows = () => {
+    return _.filter(this.tbodyElem.children, (child) => _.startsWith(child.id, 'table-row-'));
+  }
+
   handleScroll = () => {
-    const SCROLL_BUFFER = 300;
+    const ROW_BUFFER = 10;
     const DELTA_AMOUNT = 20;
     let lowerBoundDelta = 0;
     let upperBoundDelta = 0;
 
-    if (this.tbodyElem.scrollTop < SCROLL_BUFFER) {
+    const renderedRows = this.getRenderedRows();
+    const tbodyBoundingRect = this.tbodyElem.getBoundingClientRect();
+    const firstVisibleDocIndex = _.findIndex(renderedRows, (elem) => elem.getBoundingClientRect().bottom >= tbodyBoundingRect.top);
+    const lastVisibleDocIndex = _.findLastIndex(renderedRows, (elem) => elem.getBoundingClientRect().top <= tbodyBoundingRect.bottom, firstVisibleDocIndex);
+
+    if (firstVisibleDocIndex < ROW_BUFFER) {
       lowerBoundDelta = DELTA_AMOUNT;
     }
 
-    const tbodyBoundingRect = this.tbodyElem.getBoundingClientRect();
-
-    if (this.tbodyElem.scrollHeight - (this.tbodyElem.scrollTop + tbodyBoundingRect.height) < SCROLL_BUFFER) {
+    if (renderedRows.length - lastVisibleDocIndex < ROW_BUFFER) {
       upperBoundDelta = DELTA_AMOUNT;
     }
 
-    const topVisibleDocIndex = _.findIndex(this.tbodyElem.children, (elem) => elem.getBoundingClientRect().bottom >= tbodyBoundingRect.top);
-    if (topVisibleDocIndex !== this.props.topVisibleDocIndex) {
-      this.props.onTopVisibleDocChange(topVisibleDocIndex);
+    if (firstVisibleDocIndex !== this.props.firstVisibleDocIndex) {
+      this.props.onFirstVisibleDocChange(firstVisibleDocIndex);
     }
 
     if (lowerBoundDelta || upperBoundDelta) {
@@ -166,7 +173,7 @@ export class PdfListView extends React.Component {
       //   this.hasSetScrollPosition = true;
       // }
 
-    const meanHeightOfRenderedRows = _.meanBy(this.tbodyElem.children, (child) => child.getBoundingClientRect().height);
+    const meanHeightOfRenderedRows = _.meanBy(this.getRenderedRows(), (child) => child.getBoundingClientRect().height);
     const estimatedRowsHeightBeforeCursor = _.round(this.props.docListCursorLowerBound * meanHeightOfRenderedRows);
     const estimatedRowsHeightAfterCursor = _.round((_.size(this.props.documents) - this.props.docListCursorUpperBound) * meanHeightOfRenderedRows);
 
@@ -460,7 +467,7 @@ const mapStateToProps = (state, ownProps) => ({
     keyBy('id').
     mapValues((doc) => getAnnotationByDocumentId(state, doc.id)).
     value(),
-  ..._.pick(state, 'tagOptions', 'docListCursorLowerBound', 'docListCursorUpperBound', 'topVisibleDocIndex'),
+  ..._.pick(state, 'tagOptions', 'docListCursorLowerBound', 'docListCursorUpperBound', 'firstVisibleDocIndex'),
   ..._.pick(state.ui, 'pdfList', 'docFilterCriteria')
 });
 
@@ -470,7 +477,7 @@ const mapDispatchToProps = (dispatch) => ({
     setTagFilter,
     setCategoryFilter,
     changeDocListWindowing,
-    onTopVisibleDocChange,
+    onFirstVisibleDocChange,
     changeSortState
   }, dispatch),
   toggleDropdownFilterVisiblity(filterName) {
