@@ -4,6 +4,7 @@ import _ from 'lodash';
 import { categoryFieldNameOfCategoryName, update, moveModel } from './utils';
 import { searchString } from './search';
 
+// TODO this should also clear the doc list cursor bounds
 const updateFilteredDocIds = (nextState) => {
   const { docFilterCriteria } = nextState.ui;
   const activeCategoryFilters = _(docFilterCriteria.category).

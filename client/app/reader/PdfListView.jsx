@@ -89,6 +89,8 @@ export class PdfListView extends React.Component {
     super();
     this.state = {
       filterPositions: {
+        estimatedRowsHeightBeforeCursor: 0,
+        estimatedRowsHeightAfterCursor: 0,
         tag: {},
         category: {}
       }
@@ -138,27 +140,37 @@ export class PdfListView extends React.Component {
   getTbodyRef = (elem) => this.tbodyElem = elem
 
   componentDidUpdate() {
-    // if (!this.hasSetScrollPosition) {
-    //   this.tbodyElem.scrollTop = this.props.pdfList.scrollTop;
+      // if (!this.hasSetScrollPosition) {
+      //   this.tbodyElem.scrollTop = this.props.pdfList.scrollTop;
 
-    //   if (this.lastReadIndicatorElem) {
-    //     const lastReadBoundingRect = this.lastReadIndicatorElem.getBoundingClientRect();
-    //     const tbodyBoundingRect = this.tbodyElem.getBoundingClientRect();
-    //     const lastReadIndicatorIsInView = tbodyBoundingRect.top <= lastReadBoundingRect.top &&
-    //       lastReadBoundingRect.bottom <= tbodyBoundingRect.bottom;
+      //   if (this.lastReadIndicatorElem) {
+      //     const lastReadBoundingRect = this.lastReadIndicatorElem.getBoundingClientRect();
+      //     const tbodyBoundingRect = this.tbodyElem.getBoundingClientRect();
+      //     const lastReadIndicatorIsInView = tbodyBoundingRect.top <= lastReadBoundingRect.top &&
+      //       lastReadBoundingRect.bottom <= tbodyBoundingRect.bottom;
 
-    //     if (!lastReadIndicatorIsInView) {
-    //       const rowWithLastRead = _.find(
-    //         this.tbodyElem.children,
-    //         (tr) => tr.querySelector(`#${this.lastReadIndicatorElem.id}`)
-    //       );
+      //     if (!lastReadIndicatorIsInView) {
+      //       const rowWithLastRead = _.find(
+      //         this.tbodyElem.children,
+      //         (tr) => tr.querySelector(`#${this.lastReadIndicatorElem.id}`)
+      //       );
 
-    //       this.tbodyElem.scrollTop += rowWithLastRead.getBoundingClientRect().top - tbodyBoundingRect.top;
-    //     }
-    //   }
+      //       this.tbodyElem.scrollTop += rowWithLastRead.getBoundingClientRect().top - tbodyBoundingRect.top;
+      //     }
+      //   }
 
-    //   this.hasSetScrollPosition = true;
-    // }
+      //   this.hasSetScrollPosition = true;
+      // }
+
+    const meanHeightOfRenderedRows = _.meanBy(this.tbodyElem.children, (child) => child.getBoundingClientRect().height);
+    const estimatedRowsHeightBeforeCursor = this.props.docListCursorLowerBound * meanHeightOfRenderedRows;
+    const estimatedRowsHeightAfterCursor = _.size(this.props.documents) - this.props.docListCursorUpperBound;
+
+    this.setState({
+      estimatedRowsHeightBeforeCursor,
+      estimatedRowsHeightAfterCursor
+    });
+
     this.setFilterIconPositions();
   }
 
@@ -203,6 +215,14 @@ export class PdfListView extends React.Component {
 
   // eslint-disable-next-line max-statements
   getDocumentColumns = (row) => {
+    if (row && _.has(row, 'spacer')) {
+      if (!row.spacer) {
+        return null;
+      }
+
+      return <tr style={{height: `${row.spacer}px`}} ariaHidden />
+    }
+
     const className = this.props.docFilterCriteria.sort.sortAscending ? 'fa-caret-up' : 'fa-caret-down';
 
     let sortIcon = <i className={`fa fa-1 ${className} table-icon`}
@@ -414,6 +434,12 @@ export class PdfListView extends React.Component {
       }).
       value();
 
+    const rowObjectsWithSpacers = [
+      {spacer: this.state.estimatedRowsHeightBeforeCursor},
+      ...rowObjects,
+      {spacer: this.state.estimatedRowsHeightAfterCursor}
+    ];
+
     return <div className="usa-grid">
       <div className="cf-app">
         <div className="cf-app-segment cf-app-segment--alt">
@@ -421,7 +447,7 @@ export class PdfListView extends React.Component {
           <div>
             <Table
               columns={this.getDocumentColumns}
-              rowObjects={rowObjects}
+              rowObjects={rowObjectsWithSpacers}
               summary="Document list"
               className="documents-table"
               headerClassName="cf-document-list-header-row"
