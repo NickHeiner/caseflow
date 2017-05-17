@@ -370,19 +370,21 @@ export class PdfListView extends React.Component {
       commentSelectorClassNames.push('cf-label');
     }
 
-    let rowObjects = this.props.documents.reduce((acc, row) => {
-      acc.push(row);
-      const doc = _.find(this.props.documents, _.pick(row, 'id'));
+    const rowObjects = _(this.props.documents).
+      take(10).
+      flatMap((doc) => {
+        const result = [doc];
+        
+        if (_.size(this.props.annotationsPerDocument[doc.id]) && doc.listComments) {
+          result.push({
+            ...doc,
+            isComment: true
+          });
+        }
 
-      if (_.size(this.props.annotationsPerDocument[doc.id]) && doc.listComments) {
-        acc.push({
-          ...row,
-          isComment: true
-        });
-      }
-
-      return acc;
-    }, []);
+        return result;
+      }).
+      value();
 
     return <div className="usa-grid">
       <div className="cf-app">
