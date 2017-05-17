@@ -395,7 +395,7 @@ export class PdfListView extends React.Component {
     }
 
     const rowObjects = _(this.props.documents).
-      take(10).
+      slice(this.props.docListCursorLowerBound, this.props.docListCursorUpperBound).
       flatMap((doc) => {
         const result = [doc];
 
@@ -438,7 +438,7 @@ const mapStateToProps = (state, ownProps) => ({
     keyBy('id').
     mapValues((doc) => getAnnotationByDocumentId(state, doc.id)).
     value(),
-  ..._.pick(state, 'tagOptions'),
+  ..._.pick(state, 'tagOptions', 'docListCursorLowerBound', 'docListCursorUpperBound'),
   ..._.pick(state.ui, 'pdfList', 'docFilterCriteria')
 });
 
