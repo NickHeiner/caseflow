@@ -42,6 +42,12 @@ const updateFilteredDocIds = (nextState) => {
   }
 
   return update(nextState, {
+    docListCursorLowerBound: {
+      $set: 0,
+    },
+    docListCursorUpperBound: {
+      $set: 70
+    },
     ui: {
       filteredDocIds: {
         $set: filteredIds
