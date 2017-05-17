@@ -244,10 +244,10 @@ export const reducer = (state = initialState, action = {}) => {
   case Constants.SCROLL_DOC_LIST:
     return update(state, {
       docListCursorLowerBound: {
-        $apply: (prevVal) => Math.max(prevVal - action.payload.lowerBoundDelta, 0)
+        $set: action.payload.lowerBoundDelta
       },
       docListCursorUpperBound: {
-        $apply: (prevVal) => Math.min(prevVal + action.payload.upperBoundDelta, _.size(state.ui.filteredDocIds) || _.size(state.documents))
+        $set: action.payload.upperBoundDelta
       }
     });
   case Constants.SET_SEARCH:
@@ -281,7 +281,7 @@ export const reducer = (state = initialState, action = {}) => {
         $set: state.firstVisibleDocIndex
       },
       docListCursorUpperBound: {
-        $set: state.firstVisibleDocIndex + 20
+        $set: state.firstVisibleDocIndex + 70
       },
       ui: {
         pdfSidebar: { showErrorMessage: { $set: initialShowErrorMessageState } }

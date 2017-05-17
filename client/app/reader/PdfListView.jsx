@@ -114,7 +114,7 @@ export class PdfListView extends React.Component {
     const lastVisibleDocIndex = _.findLastIndex(renderedRows, (elem) => elem.getBoundingClientRect().top <= tbodyBoundingRect.bottom, firstVisibleDocIndex);
 
     if (firstVisibleDocIndex < ROW_BUFFER) {
-      lowerBoundDelta = DELTA_AMOUNT;
+      lowerBoundDelta = -DELTA_AMOUNT;
     }
 
     if (renderedRows.length - lastVisibleDocIndex < ROW_BUFFER) {
@@ -125,8 +125,14 @@ export class PdfListView extends React.Component {
       this.props.onFirstVisibleDocChange(firstVisibleDocIndex);
     }
 
-    if (lowerBoundDelta || upperBoundDelta) {
-      this.props.changeDocListWindowing(lowerBoundDelta, upperBoundDelta);
+    const nextLowerBound = Math.max(this.props.docListCursorLowerBound + lowerBoundDelta, 0);
+    const nextUpperBound = Math.min(this.props.docListCursorUpperBound + upperBoundDelta, this.props.documents.length);
+
+    if (nextLowerBound !== this.props.docListCursorLowerBound || nextUpperBound !== this.props.docListCursorUpperBound) {
+      this.props.changeDocListWindowing(
+        nextLowerBound, 
+        nextUpperBound
+      );
     }
   };
 
@@ -175,7 +181,7 @@ export class PdfListView extends React.Component {
 
     const meanHeightOfRenderedRows = _.meanBy(this.getRenderedRows(), (child) => child.getBoundingClientRect().height);
     const estimatedRowsHeightBeforeCursor = _.round(this.props.docListCursorLowerBound * meanHeightOfRenderedRows);
-    const estimatedRowsHeightAfterCursor = _.round((_.size(this.props.documents) - this.props.docListCursorUpperBound) * meanHeightOfRenderedRows);
+    const estimatedRowsHeightAfterCursor = _.round((this.props.documents.length - this.props.docListCursorUpperBound) * meanHeightOfRenderedRows);
 
     this.setState({
       estimatedRowsHeightBeforeCursor,
