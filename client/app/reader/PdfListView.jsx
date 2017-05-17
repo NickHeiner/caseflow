@@ -138,27 +138,27 @@ export class PdfListView extends React.Component {
   getTbodyRef = (elem) => this.tbodyElem = elem
 
   componentDidUpdate() {
-    if (!this.hasSetScrollPosition) {
-      this.tbodyElem.scrollTop = this.props.pdfList.scrollTop;
+    // if (!this.hasSetScrollPosition) {
+    //   this.tbodyElem.scrollTop = this.props.pdfList.scrollTop;
 
-      if (this.lastReadIndicatorElem) {
-        const lastReadBoundingRect = this.lastReadIndicatorElem.getBoundingClientRect();
-        const tbodyBoundingRect = this.tbodyElem.getBoundingClientRect();
-        const lastReadIndicatorIsInView = tbodyBoundingRect.top <= lastReadBoundingRect.top &&
-          lastReadBoundingRect.bottom <= tbodyBoundingRect.bottom;
+    //   if (this.lastReadIndicatorElem) {
+    //     const lastReadBoundingRect = this.lastReadIndicatorElem.getBoundingClientRect();
+    //     const tbodyBoundingRect = this.tbodyElem.getBoundingClientRect();
+    //     const lastReadIndicatorIsInView = tbodyBoundingRect.top <= lastReadBoundingRect.top &&
+    //       lastReadBoundingRect.bottom <= tbodyBoundingRect.bottom;
 
-        if (!lastReadIndicatorIsInView) {
-          const rowWithLastRead = _.find(
-            this.tbodyElem.children,
-            (tr) => tr.querySelector(`#${this.lastReadIndicatorElem.id}`)
-          );
+    //     if (!lastReadIndicatorIsInView) {
+    //       const rowWithLastRead = _.find(
+    //         this.tbodyElem.children,
+    //         (tr) => tr.querySelector(`#${this.lastReadIndicatorElem.id}`)
+    //       );
 
-          this.tbodyElem.scrollTop += rowWithLastRead.getBoundingClientRect().top - tbodyBoundingRect.top;
-        }
-      }
+    //       this.tbodyElem.scrollTop += rowWithLastRead.getBoundingClientRect().top - tbodyBoundingRect.top;
+    //     }
+    //   }
 
-      this.hasSetScrollPosition = true;
-    }
+    //   this.hasSetScrollPosition = true;
+    // }
     this.setFilterIconPositions();
   }
 

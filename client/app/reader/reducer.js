@@ -269,6 +269,12 @@ export const reducer = (state = initialState, action = {}) => {
     }));
   case Constants.SELECT_CURRENT_VIEWER_PDF:
     return updateLastReadDoc(update(state, {
+      docListCursorLowerBound: {
+        $set: state.topVisibleDocIndex
+      },
+      docListCursorUpperBound: {
+        $set: state.topVisibleDocIndex + 20
+      },
       ui: {
         pdfSidebar: { showErrorMessage: { $set: initialShowErrorMessageState } }
       },
