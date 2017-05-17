@@ -109,7 +109,8 @@ const getExpandAllState = (documents) => {
 
 export const initialState = {
   docListCursorLowerBound: 0,
-  docListCursorUpperBound: 30,
+  // TODO this should be sync'd with the values in PdfListView.
+  docListCursorUpperBound: 70,
   firstVisibleDocIndex: 0,
   ui: {
     pendingAnnotations: {},

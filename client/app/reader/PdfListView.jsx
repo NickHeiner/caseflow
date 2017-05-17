@@ -103,7 +103,7 @@ export class PdfListView extends React.Component {
   }
 
   handleScroll = () => {
-    const ROW_BUFFER = 10;
+    const ROW_BUFFER = 50;
     const DELTA_AMOUNT = 20;
     let lowerBoundDelta = 0;
     let upperBoundDelta = 0;
