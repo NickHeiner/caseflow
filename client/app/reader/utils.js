@@ -10,22 +10,25 @@ export const categoryFieldNameOfCategoryName =
 
 export const keyOfAnnotation = ({ temporaryId, id }) => temporaryId || id;
 
-export const getAnnotationByDocumentId = (state, docId) =>
-  _(state.editingAnnotations).
+export const getAnnotationsByDocumentId = (editingAnnotations, pendingEditingAnnotations, annotations, pendingAnnotations, docId) =>
+  _(editingAnnotations).
   values().
   map((annotation) => ({
     editing: true,
     ...annotation
   })).
   concat(
-    _.values(state.ui.pendingEditingAnnotations),
-    _.values(state.annotations),
-    _.values(state.ui.pendingAnnotations),
+    _.values(pendingEditingAnnotations),
+    _.values(annotations),
+    _.values(pendingAnnotations),
   ).
   uniqBy('id').
   reject('pendingDeletion').
   filter({ documentId: docId }).
   value();
+
+export const getAnnotationByDocumentId = (state, docId) => 
+  getAnnotationsByDocumentId(state.editingAnnotations, state.ui.pendingEditingAnnotations, state.annotations, state.ui.pendingAnnotations, docId);
 
 /**
  * immutability-helper takes two arguments: an object and a spec for how to change it:
