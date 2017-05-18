@@ -30,7 +30,7 @@ export class DocumentCategoryIcons extends React.PureComponent {
   }
 }
 
-const getDocument = (state, props) => state.documents[props.docId];
+const getDocument = (state, docId) => state.documents[docId];
 
 const getCategories = createSelector(
   [getDocument],
@@ -42,8 +42,8 @@ const getCategories = createSelector(
     value()
 );
 
-const mapStateToProps = (state, ownProps) => ({
-  categories: getCategories(state, ownProps)
+const mapStateToProps = () => (state, {docId}) => ({
+  categories: getCategories(state, docId)
 });
 
 const ConnectedDocumentCategoryIcons = connect(mapStateToProps)(DocumentCategoryIcons);
