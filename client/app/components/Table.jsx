@@ -65,7 +65,7 @@ const getCellSpan = (rowObject, column) => {
   return 1;
 };
 
-class Row extends PerfDebugPureComponent {
+class Row extends React.PureComponent {
   render() {
     const props = this.props;
     const rowId = props.footer ? 'footer' : props.rowNumber;
@@ -85,7 +85,7 @@ class Row extends PerfDebugPureComponent {
   }
 }
 
-class BodyRows extends React.PureComponent {
+class BodyRows extends PerfDebugPureComponent {
   render() {
     const { rowObjects, bodyClassName, columns, rowClassNames, tbodyRef, id, getKeyForRow } = this.props;
     const keyGetter = getKeyForRow || _.identity;
