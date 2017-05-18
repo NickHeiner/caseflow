@@ -104,29 +104,34 @@ export class PdfListView extends React.Component {
 
   handleScroll = () => {
     const ROW_BUFFER = 50;
-    const DELTA_AMOUNT = 20;
-    let lowerBoundDelta = 0;
-    let upperBoundDelta = 0;
+    // const DELTA_AMOUNT = 20;
+    // let lowerBoundDelta = 0;
+    // let upperBoundDelta = 0;
+
+    const scrolledPortion = this.tbodyElem.scrollTop / this.tbodyElem.scrollHeight;
+    const docIndexScrolledTo = _.round(scrolledPortion * this.props.documents.length);
+    const lowerBound = docIndexScrolledTo - ROW_BUFFER;
+    const upperBound = docIndexScrolledTo + ROW_BUFFER;
 
     const renderedRows = this.getRenderedRows();
     const tbodyBoundingRect = this.tbodyElem.getBoundingClientRect();
     const firstVisibleDocIndex = _.findIndex(renderedRows, (elem) => elem.getBoundingClientRect().bottom >= tbodyBoundingRect.top);
-    const lastVisibleDocIndex = _.findLastIndex(renderedRows, (elem) => elem.getBoundingClientRect().top <= tbodyBoundingRect.bottom, firstVisibleDocIndex);
+    // const lastVisibleDocIndex = _.findLastIndex(renderedRows, (elem) => elem.getBoundingClientRect().top <= tbodyBoundingRect.bottom, firstVisibleDocIndex);
 
-    if (firstVisibleDocIndex < ROW_BUFFER) {
-      lowerBoundDelta = -DELTA_AMOUNT;
-    }
+    // if (firstVisibleDocIndex < ROW_BUFFER) {
+    //   lowerBoundDelta = -DELTA_AMOUNT;
+    // }
 
-    if (renderedRows.length - lastVisibleDocIndex < ROW_BUFFER) {
-      upperBoundDelta = DELTA_AMOUNT;
-    }
+    // if (renderedRows.length - lastVisibleDocIndex < ROW_BUFFER) {
+    //   upperBoundDelta = DELTA_AMOUNT;
+    // }
 
     if (firstVisibleDocIndex !== this.props.firstVisibleDocIndex) {
       this.props.onFirstVisibleDocChange(firstVisibleDocIndex);
     }
 
-    const nextLowerBound = Math.max(this.props.docListCursorLowerBound + lowerBoundDelta, 0);
-    const nextUpperBound = Math.min(this.props.docListCursorUpperBound + upperBoundDelta, this.props.documents.length);
+    const nextLowerBound = Math.max(lowerBound, 0);
+    const nextUpperBound = Math.min(upperBound, this.props.documents.length);
 
     if (nextLowerBound !== this.props.docListCursorLowerBound || nextUpperBound !== this.props.docListCursorUpperBound) {
       this.props.changeDocListWindowing(
@@ -179,6 +184,7 @@ export class PdfListView extends React.Component {
       //   this.hasSetScrollPosition = true;
       // }
 
+    // TODO we can improve this – once a row renders, cache it.
     const meanHeightOfRenderedRows = _.meanBy(this.getRenderedRows(), (child) => child.getBoundingClientRect().height);
     const estimatedRowsHeightBeforeCursor = _.round(this.props.docListCursorLowerBound * meanHeightOfRenderedRows);
     const estimatedRowsHeightAfterCursor = _.round((this.props.documents.length - this.props.docListCursorUpperBound) * meanHeightOfRenderedRows);
