@@ -9,12 +9,13 @@ import PdfListView from './PdfListView';
 import ApiUtil from '../util/ApiUtil';
 import * as ReaderActions from './actions';
 import _ from 'lodash';
+import {PerfDebugPureComponent} from '../util/PerfDebug';
 
 const PARALLEL_DOCUMENT_REQUESTS = 3;
 
 export const documentPath = (id) => `/document/${id}/pdf`;
 
-export class DecisionReviewer extends React.Component {
+export class DecisionReviewer extends PerfDebugPureComponent {
   constructor(props) {
     super(props);
 
@@ -148,17 +149,10 @@ export class DecisionReviewer extends React.Component {
     this.props.onScrollToComment(null);
   }
 
-  documents = () => {
-    return this.props.filteredDocIds ?
-      _.map(this.props.filteredDocIds, (docId) => this.props.storeDocuments[docId]) :
-      _.values(this.props.storeDocuments);
-  }
-
   routedPdfListView = (routerProps) => {
     const vacolsId = routerProps.match.params.vacolsId;
 
     return <PdfListView
-      documents={this.documents()}
       showPdf={this.showPdf(routerProps.history, vacolsId)}
       sortBy={this.state.sortBy}
       selectedLabels={this.state.selectedLabels}
@@ -175,7 +169,6 @@ export class DecisionReviewer extends React.Component {
     return <PdfViewer
       addNewTag={this.props.addNewTag}
       removeTag={this.props.removeTag}
-      documents={this.documents()}
       allDocuments={_.values(this.props.storeDocuments)}
       pdfWorker={this.props.pdfWorker}
       onShowList={this.onShowList(routerProps.history, vacolsId)}
@@ -219,7 +212,6 @@ DecisionReviewer.propTypes = {
 const mapStateToProps = (state) => {
   return {
     documentFilters: state.ui.pdfList.filters,
-    filteredDocIds: state.ui.filteredDocIds,
     storeDocuments: state.documents,
     pdf: state.ui.pdf
   };
