@@ -32,17 +32,19 @@ const getColumns = (props) => {
     props.columns(props.rowObject) : props.columns;
 };
 
-const HeaderRow = (props) => {
-  return <thead className={props.headerClassName}>
-    <tr>
-      {getColumns(props).map((column, columnNumber) =>
-        <th scope="col" key={columnNumber} className={cellClasses(column)}>
-          {column.header || ''}
-        </th>
-      )}
-    </tr>
-  </thead>;
-};
+class HeaderRow extends React.PureComponent {
+  render() {
+    return <thead className={this.props.headerClassName}>
+      <tr>
+        {getColumns(this.props).map((column, columnNumber) =>
+          <th scope="col" key={columnNumber} className={cellClasses(column)}>
+            {column.header || ''}
+          </th>
+        )}
+      </tr>
+    </thead>;
+  }
+}
 
 const getCellValue = (rowObject, rowNumber, column) => {
   if (column.valueFunction) {
