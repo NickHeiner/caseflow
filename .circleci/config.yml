@@ -4,6 +4,6 @@ jobs:
     working_directory: ~/caseflow
     docker:
       # This is not quite the same as what we have locally, which is 2.2.4.
-      - image: 2.2.7-node-browsers
+      - image: circleci/2.2.7-node-browsers
     steps:
       - checkout
