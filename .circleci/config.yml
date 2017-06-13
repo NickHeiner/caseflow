@@ -8,6 +8,10 @@ jobs:
     steps:
       - checkout
       - run: gem install bundler
+      - run: npm -v
+      - run: node -v
+      - run: ruby -v
+      - run: bundler -v
       - restore_cache: 
           key: bundler-{{ checksum "Gemfile.lock" }}
           paths: vendor
