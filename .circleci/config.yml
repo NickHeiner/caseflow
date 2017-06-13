@@ -15,3 +15,12 @@ jobs:
       - save_cache:
           key: bundler-{{ checksum "Gemfile.lock" }}
           paths: vendor
+      - restore_cache: 
+          key: bundler-{{ checksum "client/npm-shrinkwrap.json" }}
+          paths: client/node_modules
+      - run: 
+          command: npm install --no-optional
+          working_directory: client
+      - save_cache: 
+          key: bundler-{{ checksum "client/npm-shrinkwrap.json" }}
+          paths: client/node_modules
