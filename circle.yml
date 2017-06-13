@@ -1,4 +1,0 @@
-dependencies:
-  pre:
-    - gem install bundler
-    - bundle install --deployment --without development staging production
