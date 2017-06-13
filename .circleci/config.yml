@@ -7,3 +7,5 @@ jobs:
       - image: circleci/ruby:2.2.7-node-browsers
     steps:
       - checkout
+      - gem install bundler
+      - bundle install --deployment --without development staging production
