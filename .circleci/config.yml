@@ -8,4 +8,10 @@ jobs:
     steps:
       - checkout
       - run: gem install bundler
+      - restore_cache: 
+          key: bundler-{{ checksum 'Gemfile.lock' }}
+          paths: vendor
       - run: bundle install --deployment --without development staging production
+      - save_cache:
+          key: bundler-{{ checksum 'Gemfile.lock' }}
+          paths: vendor
