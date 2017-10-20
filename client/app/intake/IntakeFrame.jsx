@@ -18,6 +18,7 @@ import FinishPage, { FinishButtons } from './pages/finish';
 import CompletedPage, { CompletedNextButton } from './pages/completed';
 import { PAGE_PATHS, REQUEST_STATE } from './constants';
 import { toggleCancelModal, submitCancel } from './redux/actions';
+import navigationHelper from './navigationHelper';
 
 class IntakeFrame extends React.PureComponent {
   handleSubmitCancel = () => (
@@ -78,7 +79,7 @@ class IntakeFrame extends React.PureComponent {
                 exact
                 path={PAGE_PATHS.BEGIN}
                 title="Begin Intake | Caseflow Intake"
-                component={BeginPage} />
+                component={navigationHelper(BeginPage, topMessage)} />
               <PageRoute
                 exact
                 path={PAGE_PATHS.REVIEW}

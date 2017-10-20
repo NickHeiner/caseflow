@@ -69,6 +69,7 @@ export default class SearchBar extends React.Component {
       title,
       onSubmit,
       submitUsingEnterKey,
+      disabled = false,
       placeholder
     } = this.props;
 
@@ -101,6 +102,7 @@ export default class SearchBar extends React.Component {
         type="search"
         name="search"
         value={value}
+        disabled={disabled}
         onKeyPress={submitUsingEnterKey ? this.handleKeyPress : null}
         placeholder={placeholder}
         value={value}/>
@@ -108,11 +110,13 @@ export default class SearchBar extends React.Component {
         <Button
           ariaLabel="clear search"
           name="clear search"
+          disabled={disabled}
           classNames={['cf-pdf-button cf-search-close-icon']}
           onClick={onClearSearch}>
           {closeIcon()}
         </Button>}
       { !isSearchAhead && <Button name={`search-${id}`}
+        disabled={disabled}
         onClick={onSubmit ? this.onSubmit : null} on type="submit" loading={loading}>
         <span className={buttonClassNames}>Search</span>
       </Button> }
@@ -129,6 +133,7 @@ SearchBar.propTypes = {
   onClearSearch: PropTypes.func,
   recordSearch: PropTypes.func,
   loading: PropTypes.bool,
+  disabled: PropTypes.bool,
   value: PropTypes.string,
   analyticsCategory: PropTypes.string,
   onSubmit: PropTypes.func,
